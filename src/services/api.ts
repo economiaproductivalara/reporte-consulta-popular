@@ -4,13 +4,15 @@ import { INITIAL_EMPLOYEES } from '../data/initialEmployees';
 const LOCAL_STORAGE_KEY = 'mppapt_employees_v1';
 const GAS_URL_STORAGE_KEY = 'mppapt_gas_url_v1';
 
+export const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzbj6xUv22gFp6ncmArKrqlfCyum-Y9S7NpYS_GKvSpFP8vBxSRA9b9VeMkAgmnm_vL/exec';
+
 class ApiService {
-  private gasUrl: string = '';
+  private gasUrl: string = DEFAULT_GAS_URL;
 
   constructor() {
     if (typeof window !== 'undefined') {
       const savedUrl = localStorage.getItem(GAS_URL_STORAGE_KEY);
-      this.gasUrl = savedUrl || import.meta.env.VITE_APPS_SCRIPT_URL || '';
+      this.gasUrl = savedUrl || import.meta.env.VITE_APPS_SCRIPT_URL || DEFAULT_GAS_URL;
       this.initializeLocalStorage();
     }
   }

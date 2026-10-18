@@ -18,8 +18,27 @@ export const LaraMap: React.FC<LaraMapProps> = ({
   const [hoveredMun, setHoveredMun] = useState<MunicipalityMeta | null>(null);
   const [viewMode, setViewMode] = useState<'svg' | 'image'>('svg');
 
-  const getMunStats = (munId: string) => {
-    return kpis.porMunicipio[munId] || { total: 0, participaron: 0, porcentaje: 0 };
+  const getMunStats = (mun: MunicipalityMeta) => {
+    // 1. Direct match by id
+    if (kpis.porMunicipio[mun.id]) return kpis.porMunicipio[mun.id];
+    // 2. Match by uppercase name
+    const upperName = mun.nombre.toUpperCase();
+    if (kpis.porMunicipio[upperName]) return kpis.porMunicipio[upperName];
+    // 3. Match by aliases
+    if (mun.aliases) {
+      for (const alias of mun.aliases) {
+        if (kpis.porMunicipio[alias]) return kpis.porMunicipio[alias];
+      }
+    }
+    // 4. Fuzzy match
+    for (const key of Object.keys(kpis.porMunicipio)) {
+      const cleanKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+      const cleanId = mun.id.replace(/_/g, ' ');
+      if (cleanKey === cleanId || cleanKey.includes(mun.nombre.toUpperCase())) {
+        return kpis.porMunicipio[key];
+      }
+    }
+    return { total: 0, participaron: 0, porcentaje: 0 };
   };
 
   return (
@@ -95,7 +114,7 @@ export const LaraMap: React.FC<LaraMapProps> = ({
 
               {/* Render the 9 Municipalities */}
               {LARA_MUNICIPALITIES.map((mun) => {
-                const stats = getMunStats(mun.id);
+                const stats = getMunStats(mun);
                 const isSelected = selectedMunicipio === mun.id;
                 const isHovered = hoveredMun?.id === mun.id;
 
@@ -192,7 +211,7 @@ export const LaraMap: React.FC<LaraMapProps> = ({
                 </div>
 
                 {(() => {
-                  const s = getMunStats(hoveredMun.id);
+                  const s = getMunStats(hoveredMun);
                   return (
                     <div className="space-y-1.5 text-xs">
                       <div className="flex justify-between">
@@ -259,7 +278,7 @@ export const LaraMap: React.FC<LaraMapProps> = ({
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
           {LARA_MUNICIPALITIES.map((mun) => {
-            const stats = getMunStats(mun.id);
+            const stats = getMunStats(mun);
             const isSelected = selectedMunicipio === mun.id;
 
             return (
