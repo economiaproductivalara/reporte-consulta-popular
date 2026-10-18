@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { EmployeeRecord, FilterState } from '../types';
 import { AdvancedFilters } from './Dashboard/AdvancedFilters';
 import { EmployeesTable } from './Dashboard/EmployeesTable';
-import { Users, FileSpreadsheet, PlusCircle } from 'lucide-react';
+import { Users, PlusCircle } from 'lucide-react';
 
 interface RosterViewProps {
   employees: EmployeeRecord[];

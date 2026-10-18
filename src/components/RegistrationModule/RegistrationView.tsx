@@ -100,13 +100,13 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRecordUpda
   return (
     <div className="py-6 sm:py-10 px-4 sm:px-6 max-w-3xl mx-auto space-y-8 animate-in fade-in duration-200">
       
-      {/* Streamlined Minimalist Header */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center justify-center gap-2">
+      {/* Streamlined Hero Header with Large Prominent Official Logo */}
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center justify-center p-3 sm:p-4 bg-white dark:bg-slate-900 rounded-3xl shadow-md border border-slate-200/80 dark:border-slate-800 transition-transform hover:scale-[1.02]">
           <img 
             src="/logo.webp" 
-            alt="Logo Consulta Popular" 
-            className="h-16 sm:h-20 w-auto object-contain mx-auto drop-shadow-sm"
+            alt="Logo Consulta Popular Nacional 2026" 
+            className="h-28 sm:h-36 md:h-40 w-auto object-contain mx-auto drop-shadow-sm"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/icon.svg';
             }}
@@ -114,6 +114,9 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRecordUpda
         </div>
         
         <div>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-blue-50 text-[#244BC5] dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-900 mb-2">
+            Plataforma Oficial de Seguimiento
+          </span>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
             Reporte de Participación
           </h2>

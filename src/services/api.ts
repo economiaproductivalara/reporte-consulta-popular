@@ -151,7 +151,7 @@ class ApiService {
             return {
               success: true,
               data: res.employee,
-              message: '¡Participación Efectiva confirmada y sincronizada con Google Sheets!'
+              message: '¡Participación Efectiva confirmada y sincronizada con el sistema oficial!'
             };
           }
         }

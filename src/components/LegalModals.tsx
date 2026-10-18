@@ -75,7 +75,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ type, onClose }) => {
                   3. Tratamiento de Datos en MAYÚSCULAS y Normalización
                 </h4>
                 <p>
-                  Por estándar de integración institucional, toda información capturada o actualizada (estados, municipios, observaciones) se procesa bajo sanitización estricta a letras mayúsculas y queda vinculada a la Hoja de Control Oficial en Google Sheets.
+                  Por estándar de integración institucional, toda información capturada o actualizada (estados, municipios, observaciones) se procesa bajo sanitización estricta a letras mayúsculas y queda vinculada a la Base de Datos de Control Oficial del Ministerio.
                 </p>
               </div>
 
@@ -108,7 +108,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ type, onClose }) => {
                   2. Destino y Custodia de la Información
                 </h4>
                 <p>
-                  Los registros se almacenan en infraestructura segura de Google Workspace Institucional bajo control del Ministerio. Ningún dato es transferido, cedido ni comercializado con entidades terceras privadas.
+                  Los registros se almacenan en infraestructura segura del servidor institucional bajo control del Ministerio. Ningún dato es transferido, cedido ni comercializado con entidades terceras privadas.
                 </p>
               </div>
 
@@ -126,7 +126,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ type, onClose }) => {
                   4. Seguridad Técnica
                 </h4>
                 <p>
-                  Las comunicaciones entre la aplicación web, el Edge de Vercel y la API de Google Apps Script se realizan bajo canales cifrados con protocolo TLS/HTTPS de última generación con bloqueos seguros de concurrencia.
+                  Las comunicaciones entre la aplicación web y la base de datos se realizan bajo canales cifrados con protocolo TLS/HTTPS de última generación con bloqueos seguros de concurrencia.
                 </p>
               </div>
             </>

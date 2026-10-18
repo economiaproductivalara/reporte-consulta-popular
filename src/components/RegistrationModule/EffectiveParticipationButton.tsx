@@ -81,7 +81,7 @@ export const EffectiveParticipationButton: React.FC<EffectiveParticipationButton
       </button>
 
       <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2.5">
-        Al hacer clic se registrará el timestamp de votación y se marcará como <strong>PARTICIPÓ: SÍ</strong> en Google Sheets.
+        Al hacer clic se registrará el timestamp de votación y se marcará como <strong>PARTICIPÓ: SÍ</strong> en el sistema oficial.
       </p>
     </div>
   );

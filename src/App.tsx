@@ -4,7 +4,6 @@ import { Footer } from './components/Footer';
 import { RegistrationView } from './components/RegistrationModule/RegistrationView';
 import { DashboardView } from './components/Dashboard/DashboardView';
 import { RosterView } from './components/RosterView';
-import { SettingsModal } from './components/SettingsModal';
 import { DashboardAuthModal } from './components/DashboardAuthModal';
 import { LegalModal } from './components/LegalModals';
 import { EmployeeRecord } from './types';
@@ -28,8 +27,6 @@ export function App() {
   });
 
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
-  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
-  const [isGasConnected, setIsGasConnected] = useState<boolean>(false);
 
   // Sincronizar clase dark en el elemento <html>
   useEffect(() => {
@@ -46,7 +43,6 @@ export function App() {
   const loadEmployees = useCallback(async () => {
     const data = await apiService.getAllEmployees();
     setEmployees(data);
-    setIsGasConnected(Boolean(apiService.getGasUrl()));
   }, []);
 
   useEffect(() => {
@@ -86,8 +82,6 @@ export function App() {
         setActiveTab={setActiveTab}
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        isGasConnected={isGasConnected}
         totalParticiparon={totalParticiparon}
         totalPadron={totalPadron}
         isAuthenticated={isAuthenticated}
@@ -143,13 +137,6 @@ export function App() {
 
       {/* Footer */}
       <Footer onOpenLegal={(type) => setLegalModalType(type)} />
-
-      {/* Backend Settings Modal */}
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        onSettingsSaved={loadEmployees}
-      />
 
       {/* Dashboard Password Protected Gate Modal */}
       <DashboardAuthModal
