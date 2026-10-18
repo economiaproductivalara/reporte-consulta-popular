@@ -6,7 +6,7 @@ import { DashboardView } from './components/Dashboard/DashboardView';
 import { RosterView } from './components/RosterView';
 import { DashboardAuthModal } from './components/DashboardAuthModal';
 import { LegalModal } from './components/LegalModals';
-import { EmployeeRecord } from './types';
+import { EmployeeRecord, DashboardKpis } from './types';
 import { apiService } from './services/api';
 import { authService } from './services/auth';
 
@@ -36,6 +36,9 @@ export function App() {
   });
 
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
+  const [liveStats, setLiveStats] = useState<DashboardKpis | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
   // Sincronizar clase dark en el elemento <html>
   useEffect(() => {
@@ -52,14 +55,41 @@ export function App() {
     }
   }, [isDarkMode]);
 
-  // Cargar datos de empleados
-  const loadEmployees = useCallback(async () => {
-    const data = await apiService.getAllEmployees();
-    setEmployees(data);
+  // Cargar datos y estadísticas en vivo del padrón dinámico
+  const loadEmployees = useCallback(async (isBackground = false) => {
+    if (!isBackground) setIsRefreshing(true);
+
+    try {
+      // 1. Estadísticas en vivo de alta velocidad directamente de Google Sheets (action=stats)
+      const statsPromise = apiService.getLiveStats().then((stats) => {
+        if (stats && stats.totalPadron > 0) {
+          setLiveStats(stats);
+        }
+      });
+
+      // 2. Nómina completa para filtros territoriales y tabla (action=list)
+      const listPromise = apiService.getAllEmployees().then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setEmployees(data);
+        }
+      });
+
+      await Promise.allSettled([statsPromise, listPromise]);
+      setLastUpdated(new Date());
+    } finally {
+      if (!isBackground) setIsRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {
     loadEmployees();
+
+    // Polling reactivo cada 30 segundos para garantizar datos dinámicos en vivo
+    const timer = setInterval(() => {
+      loadEmployees(true);
+    }, 30000);
+
+    return () => clearInterval(timer);
   }, [loadEmployees]);
 
   // Manejo de solicitud de autenticación para Dashboard o Padrón
@@ -82,9 +112,12 @@ export function App() {
     }
   };
 
-  // Cálculos rápidos para la barra de navegación
-  const totalPadron = employees.length;
-  const totalParticiparon = employees.filter(e => e.participo === 'SÍ').length;
+  // Cálculos 100% dinámicos para la barra de navegación
+  const totalPadron = Math.max(employees.length, liveStats?.totalPadron || 0);
+  const totalParticiparon = Math.max(
+    employees.filter(e => e.participo === 'SÍ').length,
+    liveStats?.totalParticiparon || 0
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
@@ -105,14 +138,18 @@ export function App() {
       {/* Main App Viewport */}
       <main className="flex-1 w-full pb-20 lg:pb-0">
         {activeTab === 'register' && (
-          <RegistrationView onRecordUpdated={loadEmployees} />
+          <RegistrationView onRecordUpdated={() => loadEmployees(false)} />
         )}
 
         {activeTab === 'dashboard' && (
           isAuthenticated ? (
             <DashboardView
               employees={employees}
-              onEmployeeUpdated={loadEmployees}
+              liveStats={liveStats}
+              isRefreshing={isRefreshing}
+              lastUpdated={lastUpdated}
+              onEmployeeUpdated={() => loadEmployees(false)}
+              onRefresh={() => loadEmployees(false)}
             />
           ) : (
             <div className="py-20 text-center space-y-4">
@@ -131,7 +168,8 @@ export function App() {
           isAuthenticated ? (
             <RosterView
               employees={employees}
-              onEmployeeUpdated={loadEmployees}
+              totalMetaPadron={totalPadron}
+              onEmployeeUpdated={() => loadEmployees(false)}
               onOpenRegisterTab={() => setActiveTab('register')}
             />
           ) : (

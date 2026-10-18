@@ -4,21 +4,29 @@ import { LaraMap } from './LaraMap';
 import { ForeignParticipationAlert } from './ForeignParticipationAlert';
 import { AdvancedFilters } from './AdvancedFilters';
 import { EmployeesTable } from './EmployeesTable';
-import { EmployeeRecord, FilterState } from '../../types';
+import { EmployeeRecord, FilterState, DashboardKpis } from '../../types';
 import { apiService } from '../../services/api';
 import { matchMunicipio } from '../../data/geoLara';
 import { generatePendingReportPdf } from '../../services/pdfReport';
 import { soundFX } from '../../services/audio';
-import { Sparkles, FileText } from 'lucide-react';
+import { Sparkles, FileText, RefreshCw, Radio } from 'lucide-react';
 
 interface DashboardViewProps {
   employees: EmployeeRecord[];
+  liveStats?: DashboardKpis | null;
+  isRefreshing?: boolean;
+  lastUpdated?: Date;
   onEmployeeUpdated: () => void;
+  onRefresh?: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   employees,
+  liveStats,
+  isRefreshing = false,
+  lastUpdated,
   onEmployeeUpdated,
+  onRefresh,
 }) => {
   const [filters, setFilters] = useState<FilterState>({
     institucion: '',
@@ -29,10 +37,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     soloForaneos: false
   });
 
-  // Cálculo de KPIs en tiempo real a partir de la lista completa
+  // Cálculo de KPIs 100% dinámico combinando la lista y las estadísticas en vivo de Google Sheets
   const kpis = useMemo(() => {
-    return apiService.calculateKpis(employees);
-  }, [employees]);
+    return apiService.calculateKpis(employees, liveStats);
+  }, [employees, liveStats]);
 
   // Filtrado reactivo de trabajadores
   const filteredEmployees = useMemo(() => {
@@ -118,23 +126,52 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="py-4 sm:py-6 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-5 sm:space-y-8 animate-in fade-in duration-300">
       
-      {/* Title Header */}
+      {/* Title Header with Dynamic Sync Status */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-black tracking-wider uppercase bg-blue-100 text-[#244BC5] dark:bg-blue-950 dark:text-blue-300 mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            Consola de Control Estratégico
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-black tracking-wider uppercase bg-blue-100 text-[#244BC5] dark:bg-blue-950 dark:text-blue-300">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              Consola de Control Estratégico
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              <span>Padrón Dinámico: <strong className="font-mono font-black">{kpis.totalPadron}</strong></span>
+            </span>
           </div>
+
           <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
             Dashboard Analítico de Participación
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Métricas electorales en vivo para el MPPAPT Lara y sus entes adscritos en la Consulta Popular 2026.
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 flex flex-wrap items-center gap-2">
+            <span>Métricas en vivo sincronizadas con la base de datos oficial.</span>
+            {lastUpdated && (
+              <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
+                (Última sync: {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })})
+              </span>
+            )}
           </p>
         </div>
 
-        {/* Quick Action: PDF Report for Pending Voters */}
-        <div className="flex items-center gap-2.5 self-stretch sm:self-auto">
+        {/* Quick Actions: Manual Sync & PDF Report */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 self-stretch sm:self-auto">
+          {onRefresh && (
+            <button
+              type="button"
+              disabled={isRefreshing}
+              onClick={() => {
+                soundFX.playClick();
+                onRefresh();
+              }}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-black bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+              title="Actualizar datos y consultar el padrón más reciente en la base de datos"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-[#244BC5] dark:text-blue-400 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span>{isRefreshing ? 'Sincronizando...' : 'Actualizar Padrón'}</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => {
@@ -147,7 +184,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 }
               });
             }}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black bg-red-600 hover:bg-red-700 text-white shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black bg-red-600 hover:bg-red-700 text-white shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
             title="Generar y descargar reporte oficial en PDF de los trabajadores que faltan por votar"
           >
             <FileText className="w-4 h-4" />

@@ -7,12 +7,14 @@ import { Users, PlusCircle } from 'lucide-react';
 
 interface RosterViewProps {
   employees: EmployeeRecord[];
+  totalMetaPadron?: number;
   onEmployeeUpdated: () => void;
   onOpenRegisterTab: () => void;
 }
 
 export const RosterView: React.FC<RosterViewProps> = ({
   employees,
+  totalMetaPadron,
   onEmployeeUpdated,
   onOpenRegisterTab,
 }) => {
@@ -94,7 +96,7 @@ export const RosterView: React.FC<RosterViewProps> = ({
         onFilterChange={setFilters}
         onReset={handleResetFilters}
         totalFiltered={filteredEmployees.length}
-        totalAll={employees.length}
+        totalAll={Math.max(employees.length, totalMetaPadron || 0)}
       />
 
       {/* Employees Table */}

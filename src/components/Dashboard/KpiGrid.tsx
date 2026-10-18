@@ -18,13 +18,18 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ kpis }) => {
       {/* 4 Top KPI Cards - 2 Columns on Mobile, 4 Columns on Large Screens */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         
-        {/* Card 1: Total Meta Padrón */}
+        {/* Card 1: Total Meta Padrón (100% Dinámico) */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
           <div className="absolute top-0 left-0 right-0 h-1 sm:h-1.5 bg-[#244BC5]" />
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Padrón Meta
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Padrón Meta
+              </span>
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-black bg-blue-100 text-[#244BC5] dark:bg-blue-950 dark:text-blue-300">
+                Dinámico
+              </span>
+            </div>
             <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#244BC5] dark:text-blue-400 flex items-center justify-center">
               <Users className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             </div>
@@ -33,8 +38,9 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ kpis }) => {
             <span className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">
               {kpis.totalPadron.toLocaleString()}
             </span>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1 font-medium truncate">
-              Trabajadores adscritos
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1 font-medium truncate flex items-center gap-1.5">
+              <span>Trabajadores adscritos</span>
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Sincronizado dinámicamente con la base de datos oficial" />
             </p>
           </div>
         </div>

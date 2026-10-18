@@ -73,9 +73,9 @@ class ApiService {
     if (this.gasUrl) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-        const url = `${this.gasUrl}?action=search&cedula=${encodeURIComponent(cleanCedula)}`;
+        const url = `${this.gasUrl}?action=search&cedula=${encodeURIComponent(cleanCedula)}&_t=${Date.now()}`;
         const response = await fetch(url, { signal: controller.signal });
         clearTimeout(timeoutId);
 
@@ -130,7 +130,7 @@ class ApiService {
     if (this.gasUrl) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
         // Usamos GET con parámetros para máxima compatibilidad con Apps Script Web App
         const queryParams = new URLSearchParams({
@@ -138,7 +138,8 @@ class ApiService {
           cedula: cleanCedula,
           estado: cleanEstado,
           municipio: cleanMunicipio,
-          telefono: cleanTelefono
+          telefono: cleanTelefono,
+          _t: Date.now().toString()
         });
 
         const url = `${this.gasUrl}?${queryParams.toString()}`;
@@ -205,14 +206,48 @@ class ApiService {
   }
 
   /**
-   * Obtiene todos los empleados para filtros y tabla
+   * Obtiene estadísticas y métricas oficiales en tiempo real directamente de Google Sheets
+   * (Muy rápido y siempre devuelve el total exacto del Padrón Meta aunque cambie la hoja)
+   */
+  public async getLiveStats(): Promise<DashboardKpis | null> {
+    if (this.gasUrl) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        const url = `${this.gasUrl}?action=stats&_t=${Date.now()}`;
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.stats) {
+            return {
+              totalPadron: Number(data.stats.totalPadron) || 0,
+              totalParticiparon: Number(data.stats.totalParticiparon) || 0,
+              porcentajeTotal: Number(data.stats.porcentajeTotal) || 0,
+              totalForaneos: Number(data.stats.totalForaneos) || 0,
+              porcentajeForaneos: Number(data.stats.porcentajeForaneos) || 0,
+              porInstitucion: data.stats.porInstitucion || {},
+              porMunicipio: data.stats.porMunicipio || {}
+            };
+          }
+        }
+      } catch (err) {
+        console.warn('Error al obtener estadísticas en vivo de Google Sheets:', err);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Obtiene todos los empleados para filtros y tabla con timeout extendido y cache-busting
    */
   public async getAllEmployees(): Promise<EmployeeRecord[]> {
     if (this.gasUrl) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        const res = await fetch(`${this.gasUrl}?action=list`, { signal: controller.signal });
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        const url = `${this.gasUrl}?action=list&_t=${Date.now()}`;
+        const res = await fetch(url, { signal: controller.signal });
         clearTimeout(timeoutId);
         if (res.ok) {
           const data = await res.json();
@@ -229,12 +264,15 @@ class ApiService {
   }
 
   /**
-   * Cálculo de KPIs y métricas clave
+   * Cálculo de KPIs y métricas clave 100% dinámicas
+   * Combina el padrón de la base de datos remota con el listado nominal local
    */
-  public calculateKpis(employees: EmployeeRecord[]): DashboardKpis {
-    const totalPadron = employees.length;
-    let totalParticiparon = 0;
-    let totalForaneos = 0;
+  public calculateKpis(employees: EmployeeRecord[], remoteStats?: DashboardKpis | null): DashboardKpis {
+    // Si tenemos estadísticas remotas autoritativas en vivo de Google Sheets, priorizar su Padrón Meta
+    const effectivePadron = Math.max(employees.length, remoteStats?.totalPadron || 0);
+
+    let localParticiparon = 0;
+    let localForaneos = 0;
     const porInstitucion: Record<string, { total: number; participaron: number; porcentaje: number }> = {};
     const porMunicipio: Record<string, { total: number; participaron: number; porcentaje: number }> = {};
 
@@ -243,9 +281,9 @@ class ApiService {
       const isForeign = (emp.estado && emp.estado.toUpperCase() !== 'LARA') || emp.esForaneo === true;
 
       if (isYes) {
-        totalParticiparon++;
+        localParticiparon++;
         if (isForeign) {
-          totalForaneos++;
+          localForaneos++;
         }
       }
 
@@ -277,17 +315,25 @@ class ApiService {
       }
     });
 
+    const totalParticiparon = Math.max(localParticiparon, remoteStats?.totalParticiparon || 0);
+    const totalForaneos = Math.max(localForaneos, remoteStats?.totalForaneos || 0);
+    const totalPadron = effectivePadron > 0 ? effectivePadron : (totalParticiparon || 0);
+
     const porcentajeTotal = totalPadron > 0 ? Number(((totalParticiparon / totalPadron) * 100).toFixed(1)) : 0;
     const porcentajeForaneos = totalParticiparon > 0 ? Number(((totalForaneos / totalParticiparon) * 100).toFixed(1)) : 0;
 
+    // Si remoteStats tiene instituciones más completas, utilizarlas como respaldo
+    const finalPorInstitucion = Object.keys(porInstitucion).length > 0 ? porInstitucion : (remoteStats?.porInstitucion || {});
+    const finalPorMunicipio = Object.keys(porMunicipio).length > 0 ? porMunicipio : (remoteStats?.porMunicipio || {});
+
     // Calcular porcentajes por grupo
-    Object.keys(porInstitucion).forEach(key => {
-      const item = porInstitucion[key];
+    Object.keys(finalPorInstitucion).forEach(key => {
+      const item = finalPorInstitucion[key];
       item.porcentaje = item.total > 0 ? Number(((item.participaron / item.total) * 100).toFixed(1)) : 0;
     });
 
-    Object.keys(porMunicipio).forEach(key => {
-      const item = porMunicipio[key];
+    Object.keys(finalPorMunicipio).forEach(key => {
+      const item = finalPorMunicipio[key];
       item.porcentaje = item.total > 0 ? Number(((item.participaron / item.total) * 100).toFixed(1)) : 0;
     });
 
@@ -297,8 +343,8 @@ class ApiService {
       porcentajeTotal,
       totalForaneos,
       porcentajeForaneos,
-      porInstitucion,
-      porMunicipio
+      porInstitucion: finalPorInstitucion,
+      porMunicipio: finalPorMunicipio
     };
   }
 
