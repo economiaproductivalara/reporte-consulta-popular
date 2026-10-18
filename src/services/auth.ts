@@ -2,7 +2,7 @@ const AUTH_STORAGE_KEY = 'mppapt_dashboard_auth_token';
 
 class AuthService {
   /**
-   * Obtiene la contraseña configurada en la variable de entorno de Vercel
+   * Obtiene la contraseña configurada en la variable de entorno del sistema
    */
   private getTargetPassword(): string {
     return import.meta.env.VITE_DASHBOARD_PASSWORD || 'MPPAPT2026';

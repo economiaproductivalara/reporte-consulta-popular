@@ -39,7 +39,7 @@ export const DashboardAuthModal: React.FC<DashboardAuthModalProps> = ({
       onSuccess();
     } else {
       soundFX.playWarning();
-      setError('Contraseña incorrecta. Verifique la clave configurada en la variable VITE_DASHBOARD_PASSWORD en Vercel.');
+      setError('Contraseña incorrecta. Verifique la clave de seguridad institucional o consulte a la coordinación del MPPAPT Lara.');
     }
   };
 
@@ -128,7 +128,7 @@ export const DashboardAuthModal: React.FC<DashboardAuthModalProps> = ({
         <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
           <span className="inline-flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            Protegido mediante variable de entorno en Vercel
+            Acceso seguro protegido institucionalmente
           </span>
         </div>
 

@@ -60,12 +60,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegal }) => {
 
         </div>
 
-        {/* Bottom copyright line with Designer / Developer credit */}
-        <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500 dark:text-slate-400">
-          <span>República Bolivariana de Venezuela • Gobernación del Estado Lara</span>
-          
+        {/* Bottom credit line */}
+        <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-center text-[11px] text-slate-500 dark:text-slate-400">
           {/* Active credit requested by user */}
-          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
+          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
             <Code className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span className="text-slate-600 dark:text-slate-300">Diseño y Desarrollo:</span>
             <a
