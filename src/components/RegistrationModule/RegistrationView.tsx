@@ -198,35 +198,6 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRecordUpda
         </div>
       )}
 
-      {/* Discrete shortcuts for demonstration */}
-      {!currentEmployee && (
-        <div className="pt-4 text-center">
-          <span className="text-[11px] font-semibold text-slate-400 block mb-2">
-            Cédulas de demostración para pruebas:
-          </span>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {[
-              { c: '18456123', l: 'INTI (Pendiente)' },
-              { c: '20345678', l: 'CIARA (Sin Mun)' },
-              { c: '11223344', l: 'Foráneo (Caracas)' },
-              { c: '14234567', l: 'MPPAPT (Ya votó)' }
-            ].map((s) => (
-              <button
-                key={s.c}
-                type="button"
-                onClick={() => {
-                  setCedula(s.c);
-                  handleSearch(s.c);
-                }}
-                className="px-2.5 py-1 text-xs font-mono font-bold rounded-lg bg-slate-100 hover:bg-blue-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
-              >
-                {s.c} <span className="text-[10px] font-sans font-normal text-slate-400">({s.l})</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
     </div>
   );
 };
