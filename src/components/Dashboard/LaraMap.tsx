@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { 
   MapPin, 
-  Layers, 
-  Eye, 
   Maximize2, 
   Minimize2, 
   CheckCircle2, 
@@ -40,7 +38,6 @@ export const LaraMap: React.FC<LaraMapProps> = ({
   onSelectMunicipio,
 }) => {
   const [hoveredMun, setHoveredMun] = useState<MunicipalityMeta | null>(null);
-  const [viewMode, setViewMode] = useState<'original' | 'svg'>('original');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const getMunStats = (mun: MunicipalityMeta) => {
@@ -100,34 +97,6 @@ export const LaraMap: React.FC<LaraMapProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-            <button
-              type="button"
-              onClick={() => setViewMode('original')}
-              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${
-                viewMode === 'original'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span>Mapa Original</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('svg')}
-              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${
-                viewMode === 'svg'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span>Polígonos SVG</span>
-            </button>
-          </div>
-
           {/* Fullscreen Expand Button */}
           <button
             type="button"
@@ -143,11 +112,8 @@ export const LaraMap: React.FC<LaraMapProps> = ({
       {/* Main Map Presentation Stage */}
       <div className="relative mt-6 flex items-center justify-center bg-slate-100/70 dark:bg-slate-950/70 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-2 sm:p-6 overflow-hidden">
         
-        {viewMode === 'original' ? (
-          /* ============================================================== */
-          /* RENDERIZADO DEL MAPA ORIGINAL CON DATA OVERLAY INTERACTIVO     */
-          /* ============================================================== */
-          <div className="relative w-full max-w-4xl aspect-[1023/799] select-none rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-300 dark:border-slate-700 bg-white">
+        {/* RENDERIZADO DEL MAPA ORIGINAL CON DATA OVERLAY INTERACTIVO */}
+        <div className="relative w-full max-w-4xl aspect-[1023/799] select-none rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-300 dark:border-slate-700 bg-white">
             
             {/* Imagen Original Oficial en Alta Definición */}
             <img
@@ -285,108 +251,6 @@ export const LaraMap: React.FC<LaraMapProps> = ({
             </div>
 
           </div>
-        ) : (
-          /* ============================================================== */
-          /* MODO MAPA VECTORIAL SVG                                         */
-          /* ============================================================== */
-          <div className="relative w-full max-w-2xl aspect-[4/3] flex items-center justify-center">
-            <svg
-              viewBox="0 0 900 900"
-              className="w-full h-full drop-shadow-md select-none transition-transform"
-            >
-              <defs>
-                <filter id="lara-glow-render" x="-10%" y="-10%" width="120%" height="120%">
-                  <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.15" />
-                </filter>
-              </defs>
-
-              <text x="210" y="45" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">FALCÓN</text>
-              <text x="40" y="380" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">ZULIA</text>
-              <text x="180" y="870" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">TRUJILLO</text>
-              <text x="750" y="900" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">PORTUGUESA</text>
-              <text x="820" y="440" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">YARACUY</text>
-
-              {LARA_MUNICIPALITIES.map((mun) => {
-                const stats = getMunStats(mun);
-                const isSelected = selectedMunicipio === mun.id;
-                const isHovered = hoveredMun?.id === mun.id;
-
-                return (
-                  <g
-                    key={mun.id}
-                    className="cursor-pointer transition-all duration-200"
-                    onMouseEnter={() => setHoveredMun(mun)}
-                    onMouseLeave={() => setHoveredMun(null)}
-                    onClick={() => {
-                      soundFX.playClick();
-                      onSelectMunicipio(isSelected ? '' : mun.id);
-                    }}
-                  >
-                    <path
-                      d={mun.svgPath}
-                      fill={mun.colorBase}
-                      stroke={isSelected ? '#FFFFFF' : isHovered ? '#1E293B' : mun.colorBorder}
-                      strokeWidth={isSelected ? 4 : isHovered ? 3 : 1.5}
-                      strokeLinejoin="round"
-                      className="transition-all duration-150 hover:brightness-110 active:scale-[0.99] origin-center"
-                      style={{
-                        filter: isSelected ? 'url(#lara-glow-render)' : 'none',
-                        opacity: selectedMunicipio && !isSelected ? 0.45 : 1
-                      }}
-                    />
-
-                    <text
-                      x={mun.labelPos.x}
-                      y={mun.labelPos.y - 12}
-                      textAnchor="middle"
-                      fill="#FFFFFF"
-                      fontSize="17"
-                      fontWeight="900"
-                      className="pointer-events-none drop-shadow-[0_2px_3px_rgba(0,0,0,0.85)] tracking-wide uppercase"
-                    >
-                      {mun.nombre}
-                    </text>
-
-                    <text
-                      x={mun.labelPos.x}
-                      y={mun.labelPos.y + 6}
-                      textAnchor="middle"
-                      fill="#F8FAFC"
-                      fontSize="12"
-                      fontWeight="700"
-                      className="pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]"
-                    >
-                      {mun.capital}
-                    </text>
-
-                    <rect
-                      x={mun.labelPos.x - 36}
-                      y={mun.labelPos.y + 14}
-                      width="72"
-                      height="20"
-                      rx="10"
-                      fill="#0F172A"
-                      fillOpacity="0.85"
-                      className="pointer-events-none"
-                    />
-                    <text
-                      x={mun.labelPos.x}
-                      y={mun.labelPos.y + 28}
-                      textAnchor="middle"
-                      fill="#F5C500"
-                      fontSize="11"
-                      fontWeight="800"
-                      className="pointer-events-none font-mono"
-                    >
-                      {stats.participaron} ({stats.porcentaje}%)
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-        )}
-
       </div>
 
       {/* Selector Rápido de Municipios en Cuadrícula */}
