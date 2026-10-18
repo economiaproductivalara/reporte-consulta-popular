@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { MapPin, Info, Layers, Eye } from 'lucide-react';
+import { 
+  MapPin, 
+  Layers, 
+  Eye, 
+  Maximize2, 
+  Minimize2, 
+  CheckCircle2, 
+  Clock, 
+  Sparkles,
+  TrendingUp,
+  X
+} from 'lucide-react';
 import { LARA_MUNICIPALITIES, MunicipalityMeta } from '../../data/geoLara';
 import { DashboardKpis } from '../../types';
 import { soundFX } from '../../services/audio';
@@ -10,13 +21,27 @@ interface LaraMapProps {
   onSelectMunicipio: (munId: string) => void;
 }
 
+// Coordenadas calibradas con el mapa original oficial (1023 x 799 px)
+const ORIGINAL_MAP_HOTSPOTS: Record<string, { x: number; y: number; align: 'top' | 'bottom' | 'left' | 'right' }> = {
+  URDANETA: { x: 60.1, y: 16.3, align: 'bottom' },
+  TORRES: { x: 35.2, y: 46.3, align: 'bottom' },
+  CRESPO: { x: 81.2, y: 29.4, align: 'bottom' },
+  IRIBARREN: { x: 68.9, y: 42.5, align: 'top' },
+  PALAVECINO: { x: 78.2, y: 53.8, align: 'right' },
+  SIMON_PLANAS: { x: 83.8, y: 65.1, align: 'left' },
+  JIMENEZ: { x: 60.3, y: 63.8, align: 'left' },
+  ANDRES_ELOY_BLANCO: { x: 64.9, y: 76.3, align: 'bottom' },
+  MORAN: { x: 48.0, y: 72.6, align: 'bottom' },
+};
+
 export const LaraMap: React.FC<LaraMapProps> = ({
   kpis,
   selectedMunicipio,
   onSelectMunicipio,
 }) => {
   const [hoveredMun, setHoveredMun] = useState<MunicipalityMeta | null>(null);
-  const [viewMode, setViewMode] = useState<'svg' | 'image'>('svg');
+  const [viewMode, setViewMode] = useState<'original' | 'svg'>('original');
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const getMunStats = (mun: MunicipalityMeta) => {
     // 1. Direct match by id
@@ -41,78 +66,245 @@ export const LaraMap: React.FC<LaraMapProps> = ({
     return { total: 0, participaron: 0, porcentaje: 0 };
   };
 
+  const getBadgeColor = (pct: number) => {
+    if (pct >= 80) return 'bg-emerald-500 text-white';
+    if (pct >= 40) return 'bg-amber-500 text-slate-950 font-black';
+    return 'bg-blue-600 text-white';
+  };
+
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+    <div className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300 ${
+      isFullscreen ? 'fixed inset-4 z-50 overflow-y-auto max-h-[96vh] shadow-2xl' : ''
+    }`}>
       
-      {/* Header with Mode Toggle */}
+      {/* Header with Mode Toggle & Fullscreen */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#244BC5] dark:text-blue-400">
+            <span className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#244BC5] dark:text-blue-400">
               <MapPin className="w-5 h-5" />
             </span>
-            <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">
-              Mapa Territorial del Estado Lara (9 Municipios)
-            </h3>
+            <div>
+              <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
+                <span>Mapa Territorial del Estado Lara</span>
+                <span className="px-2 py-0.5 rounded-md text-[10px] bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 font-black uppercase">
+                  9 Municipios
+                </span>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Cartografía política y geográfica oficial con telemetría de votos en tiempo real
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Pase el cursor o toque cualquier municipio para consultar el avance del padrón electoral.
-          </p>
         </div>
 
-        {/* View Mode Toggle: Interactive SVG vs Satellite/Cartographic Image */}
-        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl self-start sm:self-auto border border-slate-200 dark:border-slate-700">
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+            <button
+              type="button"
+              onClick={() => setViewMode('original')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'original'
+                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Mapa Original Oficial</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('svg')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'svg'
+                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Polígonos SVG</span>
+            </button>
+          </div>
+
+          {/* Fullscreen Expand Button */}
           <button
             type="button"
-            onClick={() => setViewMode('svg')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              viewMode === 'svg'
-                ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-            }`}
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
+            title={isFullscreen ? 'Reducir tamaño' : 'Ver en pantalla completa'}
           >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Mapa Político SVG</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode('image')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              viewMode === 'image'
-                ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Cartografía Oficial</span>
+            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
         </div>
       </div>
 
-      {/* Main Map Container */}
-      <div className="relative mt-6 min-h-[460px] flex items-center justify-center bg-slate-50/50 dark:bg-slate-950/40 rounded-2xl border border-slate-100 dark:border-slate-800/80 p-4 overflow-hidden">
+      {/* Main Map Presentation Stage */}
+      <div className="relative mt-6 flex items-center justify-center bg-slate-100/70 dark:bg-slate-950/70 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-2 sm:p-6 overflow-hidden">
         
-        {viewMode === 'svg' ? (
+        {viewMode === 'original' ? (
+          /* ============================================================== */
+          /* RENDERIZADO DEL MAPA ORIGINAL CON DATA OVERLAY INTERACTIVO     */
+          /* ============================================================== */
+          <div className="relative w-full max-w-4xl aspect-[1023/799] select-none rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-300 dark:border-slate-700 bg-white">
+            
+            {/* Imagen Original Oficial en Alta Definición */}
+            <img
+              src="/mapa-lara-original.jpg"
+              alt="Mapa Político Territorial del Estado Lara - Oficial"
+              className="w-full h-full object-contain pointer-events-none"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/mapa-lara.webp';
+              }}
+            />
+
+            {/* Hotspots y Badges Interactivos sobre cada Municipio */}
+            {LARA_MUNICIPALITIES.map((mun) => {
+              const spot = ORIGINAL_MAP_HOTSPOTS[mun.id] || { x: 50, y: 50, align: 'top' };
+              const stats = getMunStats(mun);
+              const isSelected = selectedMunicipio === mun.id;
+              const isHovered = hoveredMun?.id === mun.id;
+
+              return (
+                <div
+                  key={mun.id}
+                  style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 z-20 group cursor-pointer"
+                  onClick={() => {
+                    soundFX.playClick();
+                    onSelectMunicipio(isSelected ? '' : mun.id);
+                  }}
+                  onMouseEnter={() => setHoveredMun(mun)}
+                  onMouseLeave={() => setHoveredMun(null)}
+                >
+                  {/* Pin Central con Efecto Radar / Pulso */}
+                  <div className="relative flex items-center justify-center">
+                    <span 
+                      className={`absolute w-8 h-8 rounded-full animate-ping opacity-75 ${
+                        isSelected ? 'bg-white' : 'bg-[#244BC5]'
+                      }`}
+                    />
+                    
+                    <div 
+                      className={`relative w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-lg transition-transform transform group-hover:scale-125 ${
+                        isSelected 
+                          ? 'bg-white text-slate-900 ring-4 ring-blue-500 scale-125' 
+                          : 'bg-slate-950 text-white border-2 border-white'
+                      }`}
+                    >
+                      <MapPin className="w-4 h-4 text-amber-400 drop-shadow" />
+                    </div>
+
+                    {/* Badge de Datos Integrado en el Mapa */}
+                    <div className={`absolute whitespace-nowrap transition-all duration-200 pointer-events-none ${
+                      spot.align === 'top' 
+                        ? 'bottom-full mb-1.5' 
+                        : spot.align === 'left' 
+                          ? 'right-full mr-2' 
+                          : spot.align === 'right' 
+                            ? 'left-full ml-2' 
+                            : 'top-full mt-1.5'
+                    }`}>
+                      <div className={`px-2.5 py-1 rounded-xl shadow-xl backdrop-blur-md border text-center flex items-center gap-1.5 ${
+                        isSelected
+                          ? 'bg-blue-600 text-white border-blue-400 ring-2 ring-white'
+                          : 'bg-slate-950/90 text-white border-slate-700/80 group-hover:bg-slate-900'
+                      }`}>
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider">
+                          {mun.nombre}
+                        </span>
+                        <span className={`px-1.5 py-0.2 rounded-md font-mono text-[9px] sm:text-[10px] font-black ${
+                          getBadgeColor(stats.porcentaje)
+                        }`}>
+                          {stats.participaron}/{stats.total} ({stats.porcentaje}%)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Tooltip Flotante de Detalle al Posar el Cursor */}
+            {hoveredMun && (
+              <div className="absolute bottom-3 left-3 right-3 sm:left-auto sm:right-3 sm:w-80 bg-slate-950/95 text-white backdrop-blur-md border border-slate-700/90 rounded-2xl p-4 shadow-2xl pointer-events-none z-30 animate-in fade-in zoom-in-95">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: hoveredMun.colorBase }} />
+                    <div>
+                      <h4 className="text-sm font-black uppercase text-amber-400 tracking-wide">
+                        Municipio {hoveredMun.nombre}
+                      </h4>
+                      <p className="text-[11px] text-slate-300">
+                        Capital Política: {hoveredMun.capital}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] uppercase font-bold text-slate-400">
+                    Lara
+                  </span>
+                </div>
+
+                {(() => {
+                  const s = getMunStats(hoveredMun);
+                  return (
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Meta Padrón Asignada:</span>
+                        <span className="font-mono font-bold">{s.total} trabajadores</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Votos Efectivos Reportados:</span>
+                        <span className="font-mono font-black text-emerald-400">{s.participaron}</span>
+                      </div>
+                      
+                      <div className="pt-2 border-t border-slate-800">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-slate-400 text-[11px]">Avance de Meta:</span>
+                          <span className="font-mono font-black text-amber-400">{s.porcentaje}%</span>
+                        </div>
+                        <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-blue-500 to-emerald-400 transition-all duration-300"
+                            style={{ width: `${Math.min(s.porcentaje, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* Cartographic Watermark Badge */}
+            <div className="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/80 text-[10px] text-slate-200 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-bold">Cartografía Oficial MPPAPT Lara</span>
+            </div>
+
+          </div>
+        ) : (
+          /* ============================================================== */
+          /* MODO MAPA VECTORIAL SVG                                         */
+          /* ============================================================== */
           <div className="relative w-full max-w-2xl aspect-[4/3] flex items-center justify-center">
             <svg
               viewBox="0 0 900 900"
               className="w-full h-full drop-shadow-md select-none transition-transform"
             >
-              {/* Outer boundary shadow/glow */}
               <defs>
-                <filter id="lara-glow" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="lara-glow-render" x="-10%" y="-10%" width="120%" height="120%">
                   <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.15" />
                 </filter>
               </defs>
 
-              {/* Surrounding states outline labels for geographic context */}
               <text x="210" y="45" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">FALCÓN</text>
               <text x="40" y="380" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">ZULIA</text>
               <text x="180" y="870" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">TRUJILLO</text>
               <text x="750" y="900" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">PORTUGUESA</text>
               <text x="820" y="440" fill="#94A3B8" fontSize="22" fontWeight="700" letterSpacing="2">YARACUY</text>
 
-              {/* Render the 9 Municipalities */}
               {LARA_MUNICIPALITIES.map((mun) => {
                 const stats = getMunStats(mun);
                 const isSelected = selectedMunicipio === mun.id;
@@ -129,7 +321,6 @@ export const LaraMap: React.FC<LaraMapProps> = ({
                       onSelectMunicipio(isSelected ? '' : mun.id);
                     }}
                   >
-                    {/* Municipality Polygon */}
                     <path
                       d={mun.svgPath}
                       fill={mun.colorBase}
@@ -138,12 +329,11 @@ export const LaraMap: React.FC<LaraMapProps> = ({
                       strokeLinejoin="round"
                       className="transition-all duration-150 hover:brightness-110 active:scale-[0.99] origin-center"
                       style={{
-                        filter: isSelected ? 'url(#lara-glow)' : 'none',
+                        filter: isSelected ? 'url(#lara-glow-render)' : 'none',
                         opacity: selectedMunicipio && !isSelected ? 0.45 : 1
                       }}
                     />
 
-                    {/* Municipality Name & Stat Badge in SVG */}
                     <text
                       x={mun.labelPos.x}
                       y={mun.labelPos.y - 12}
@@ -168,7 +358,6 @@ export const LaraMap: React.FC<LaraMapProps> = ({
                       {mun.capital}
                     </text>
 
-                    {/* Live participation pill inside map */}
                     <rect
                       x={mun.labelPos.x - 36}
                       y={mun.labelPos.y + 14}
@@ -194,82 +383,22 @@ export const LaraMap: React.FC<LaraMapProps> = ({
                 );
               })}
             </svg>
-
-            {/* Floating Interactive Tooltip */}
-            {hoveredMun && (
-              <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-72 bg-slate-900/95 text-white backdrop-blur-md border border-slate-700 rounded-2xl p-4 shadow-2xl pointer-events-none animate-in fade-in zoom-in-95">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
-                  <div>
-                    <h4 className="text-sm font-black uppercase text-amber-400 tracking-wide">
-                      {hoveredMun.nombre}
-                    </h4>
-                    <p className="text-[11px] text-slate-300">
-                      Capital: {hoveredMun.capital}
-                    </p>
-                  </div>
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: hoveredMun.colorBase }} />
-                </div>
-
-                {(() => {
-                  const s = getMunStats(hoveredMun);
-                  return (
-                    <div className="space-y-1.5 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Padrón asignado:</span>
-                        <span className="font-mono font-bold">{s.total} trabajadores</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Votos reportados:</span>
-                        <span className="font-mono font-bold text-emerald-400">{s.participaron}</span>
-                      </div>
-                      <div className="flex justify-between items-center pt-1 border-t border-slate-800">
-                        <span className="text-slate-400">Cumplimiento:</span>
-                        <span className="px-2 py-0.5 rounded-full text-xs font-black bg-blue-600 text-white font-mono">
-                          {s.porcentaje}%
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
-          </div>
-        ) : (
-          /* Official Image View with Data Overlays */
-          <div className="relative w-full max-w-xl aspect-[4/3] flex items-center justify-center">
-            <img
-              src="/mapa-lara.webp"
-              alt="Mapa Político Territorial del Estado Lara"
-              className="w-full h-full object-contain rounded-xl shadow-md border border-slate-200 dark:border-slate-700"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/mapa-lara.jpg';
-              }}
-            />
-            {/* Overlay hint banner */}
-            <div className="absolute bottom-2 left-2 right-2 bg-slate-900/80 backdrop-blur-sm text-white px-3 py-2 rounded-xl text-xs flex items-center justify-between">
-              <span className="font-medium">Cartografía de Referencia Oficial de Lara</span>
-              <button
-                onClick={() => setViewMode('svg')}
-                className="text-amber-400 hover:underline font-bold text-[11px]"
-              >
-                Volver a Mapa Interactivo
-              </button>
-            </div>
           </div>
         )}
 
       </div>
 
-      {/* Bottom Municipality Grid Quick Selector */}
+      {/* Selector Rápido de Municipios en Cuadrícula */}
       <div className="mt-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-            Detalle por Municipios (Haga clic para filtrar lista de trabajadores)
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <TrendingUp className="w-3.5 h-3.5 text-blue-500" />
+            Consolidado por Municipios de Lara (Haga clic para filtrar nómina)
           </span>
           {selectedMunicipio && (
             <button
               onClick={() => onSelectMunicipio('')}
-              className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline"
             >
               Quitar filtro ({selectedMunicipio})
             </button>

@@ -1,7 +1,11 @@
 import React from 'react';
-import { ShieldCheck, Heart, FileSpreadsheet } from 'lucide-react';
+import { ShieldCheck, FileSpreadsheet, FileText, Lock } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenLegal: (type: 'terms' | 'privacy') => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenLegal }) => {
   return (
     <footer className="mt-16 border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xs py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,11 +27,29 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
-            <span className="inline-flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-              Sistema Seguro y Auditado
-            </span>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <button
+              type="button"
+              onClick={() => onOpenLegal('terms')}
+              className="inline-flex items-center gap-1 hover:text-[#244BC5] dark:hover:text-blue-400 transition-colors"
+            >
+              <FileText className="w-3.5 h-3.5 text-blue-500" />
+              <span>Términos de Uso</span>
+            </button>
+
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+
+            <button
+              type="button"
+              onClick={() => onOpenLegal('privacy')}
+              className="inline-flex items-center gap-1 hover:text-[#244BC5] dark:hover:text-blue-400 transition-colors"
+            >
+              <Lock className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Política de Privacidad</span>
+            </button>
+
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+
             <a
               href="https://docs.google.com/spreadsheets/d/1NjErQyP-4q6uY495uG82PF73j7Q2rAviXYmFsodi-WY/edit"
               target="_blank"
@@ -45,6 +67,7 @@ export const Footer: React.FC = () => {
         <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-slate-400 dark:text-slate-500">
           <span>Desarrollado para el Estado Lara • República Bolivariana de Venezuela</span>
           <span className="flex items-center gap-1">
+            <ShieldCheck className="w-3 h-3 text-emerald-500" />
             Plataforma de Alta Disponibilidad optimizada para Vercel Edge Runtime
           </span>
         </div>

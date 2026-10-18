@@ -6,6 +6,7 @@ import { DashboardView } from './components/Dashboard/DashboardView';
 import { RosterView } from './components/RosterView';
 import { SettingsModal } from './components/SettingsModal';
 import { DashboardAuthModal } from './components/DashboardAuthModal';
+import { LegalModal } from './components/LegalModals';
 import { EmployeeRecord } from './types';
 import { apiService } from './services/api';
 import { authService } from './services/auth';
@@ -15,6 +16,7 @@ export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => authService.isAuthenticated());
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [pendingTargetTab, setPendingTargetTab] = useState<'dashboard' | 'roster'>('dashboard');
+  const [legalModalType, setLegalModalType] = useState<'terms' | 'privacy' | null>(null);
 
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -140,7 +142,7 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer onOpenLegal={(type) => setLegalModalType(type)} />
 
       {/* Backend Settings Modal */}
       <SettingsModal
@@ -155,6 +157,12 @@ export function App() {
         onClose={() => setIsAuthModalOpen(false)}
         onSuccess={handleAuthSuccess}
         targetTabName={pendingTargetTab === 'dashboard' ? 'el Dashboard y Mapa' : 'el Padrón General'}
+      />
+
+      {/* Terms of Use and Privacy Policy Modal */}
+      <LegalModal
+        type={legalModalType}
+        onClose={() => setLegalModalType(null)}
       />
     </div>
   );
