@@ -90,7 +90,7 @@ export function App() {
       />
 
       {/* Main App Viewport */}
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full pb-20 lg:pb-0">
         {activeTab === 'register' && (
           <RegistrationView onRecordUpdated={loadEmployees} />
         )}

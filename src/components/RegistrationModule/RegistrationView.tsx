@@ -98,15 +98,15 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRecordUpda
   };
 
   return (
-    <div className="py-6 sm:py-10 px-4 sm:px-6 max-w-3xl mx-auto space-y-8 animate-in fade-in duration-200">
+    <div className="py-4 sm:py-10 px-3 sm:px-6 max-w-3xl mx-auto space-y-6 sm:space-y-8 animate-in fade-in duration-200">
       
       {/* Streamlined Hero Header with Large Prominent Official Logo */}
-      <div className="text-center space-y-4">
-        <div className="inline-flex items-center justify-center p-3 sm:p-4 bg-white dark:bg-slate-900 rounded-3xl shadow-md border border-slate-200/80 dark:border-slate-800 transition-transform hover:scale-[1.02]">
+      <div className="text-center space-y-3 sm:space-y-4">
+        <div className="inline-flex items-center justify-center p-2.5 sm:p-4 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-md border border-slate-200/80 dark:border-slate-800 transition-transform hover:scale-[1.02]">
           <img 
             src="/logo.webp" 
             alt="Logo Consulta Popular Nacional 2026" 
-            className="h-28 sm:h-36 md:h-40 w-auto object-contain mx-auto drop-shadow-sm"
+            className="h-20 sm:h-36 md:h-40 w-auto object-contain mx-auto drop-shadow-sm"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/icon.svg';
             }}
@@ -114,10 +114,10 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRecordUpda
         </div>
         
         <div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-blue-50 text-[#244BC5] dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-900 mb-2">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-blue-50 text-[#244BC5] dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-900 mb-2">
             Plataforma Oficial de Seguimiento
           </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+          <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
             Reporte de Participación
           </h2>
           <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">
@@ -127,7 +127,7 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRecordUpda
       </div>
 
       {/* Cédula Search Box */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-sm">
         <CedulaInput
           nacionalidad={nacionalidad}
           setNacionalidad={setNacionalidad}
@@ -142,7 +142,7 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRecordUpda
 
       {/* Success Notification Alert */}
       {feedbackSuccess && (
-        <div className="p-6 bg-emerald-500 text-white rounded-3xl shadow-xl shadow-emerald-500/20 text-center space-y-4 animate-in zoom-in-95 duration-200">
+        <div className="p-4 sm:p-6 bg-emerald-500 text-white rounded-2xl sm:rounded-3xl shadow-xl shadow-emerald-500/20 text-center space-y-4 animate-in zoom-in-95 duration-200">
           <div className="w-12 h-12 bg-white/20 rounded-full mx-auto flex items-center justify-center">
             <Check className="w-7 h-7 text-white stroke-[3]" />
           </div>
@@ -160,7 +160,7 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRecordUpda
 
           <button
             onClick={handleClear}
-            className="w-full sm:w-auto px-8 py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl font-black text-sm uppercase tracking-wider shadow-md transition-all inline-flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider shadow-md transition-all inline-flex items-center justify-center gap-2"
           >
             <span>Registrar Siguiente Trabajador</span>
             <ArrowRight className="w-4 h-4" />

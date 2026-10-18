@@ -38,49 +38,49 @@ export const ForeignParticipationAlert: React.FC<ForeignParticipationAlertProps>
   }
 
   return (
-    <div className="bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent border-2 border-amber-300 dark:border-amber-700/60 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
+    <div className="bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent border-2 border-amber-300 dark:border-amber-700/60 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-sm relative overflow-hidden">
       
       {/* Decorative background watermark */}
       <div className="absolute right-0 -bottom-6 opacity-5 dark:opacity-10 pointer-events-none">
         <Globe className="w-56 h-56 text-amber-600" />
       </div>
 
-      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
         
         {/* Left: Distinctive Badge & Alert Info */}
-        <div className="flex items-start gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/30">
-            <Globe className="w-7 h-7" />
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/30">
+            <Globe className="w-5 h-5 sm:w-7 sm:h-7" />
           </div>
 
           <div>
-            <div className="flex flex-wrap items-center gap-2 mb-1">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
               {/* Mandatory Official Label */}
-              <span className="px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-amber-500 text-white shadow-sm flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5" />
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-black tracking-wider uppercase bg-amber-500 text-white shadow-sm flex items-center gap-1.5">
+                <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 PARTICIPACIÓN FORÁNEA
               </span>
 
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                 {foreignVoted.length} de {foreignEmployees.length} reportados
               </span>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+            <h3 className="text-base sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
               Trabajadores Adscritos a Lara Votando en Otros Estados
             </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+            <p className="text-[11px] sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
               Monitoreo especial de personal del MPPAPT Lara y entes adscritos que se encuentran en comisión de servicio o residencia en otras entidades federales del país durante la Consulta Popular.
             </p>
           </div>
         </div>
 
         {/* Right Action: Filter table button */}
-        <div className="shrink-0 self-start md:self-center">
+        <div className="w-full md:w-auto shrink-0 self-stretch md:self-center">
           <button
             type="button"
             onClick={() => onFilterForeign(!isOnlyForeignActive)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-200 shadow-md ${
+            className={`w-full md:w-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-200 shadow-md ${
               isOnlyForeignActive
                 ? 'bg-amber-600 text-white ring-4 ring-amber-500/30'
                 : 'bg-white dark:bg-slate-900 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 hover:bg-amber-50'

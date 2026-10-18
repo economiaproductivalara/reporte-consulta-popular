@@ -73,26 +73,26 @@ export const LaraMap: React.FC<LaraMapProps> = ({
   };
 
   return (
-    <div className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm transition-all duration-300 ${
-      isFullscreen ? 'fixed inset-4 z-50 overflow-y-auto max-h-[96vh] shadow-2xl' : ''
+    <div className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-3.5 sm:p-8 shadow-sm transition-all duration-300 ${
+      isFullscreen ? 'fixed inset-2 sm:inset-4 z-50 overflow-y-auto max-h-[96vh] shadow-2xl' : ''
     }`}>
       
       {/* Header with Mode Toggle & Fullscreen */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-slate-100 dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#244BC5] dark:text-blue-400">
-              <MapPin className="w-5 h-5" />
+            <span className="p-2 sm:p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#244BC5] dark:text-blue-400 shrink-0">
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
             </span>
             <div>
-              <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-                <span>Mapa Territorial del Estado Lara</span>
-                <span className="px-2 py-0.5 rounded-md text-[10px] bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 font-black uppercase">
+              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-1.5 sm:gap-2">
+                <span>Mapa Territorial de Lara</span>
+                <span className="px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 font-black uppercase">
                   9 Municipios
                 </span>
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Cartografía política y geográfica oficial con telemetría de votos en tiempo real
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Cartografía política oficial con telemetría de votos en tiempo real
               </p>
             </div>
           </div>
@@ -105,25 +105,25 @@ export const LaraMap: React.FC<LaraMapProps> = ({
             <button
               type="button"
               onClick={() => setViewMode('original')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${
                 viewMode === 'original'
                   ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Mapa Original Oficial</span>
+              <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>Mapa Original</span>
             </button>
             <button
               type="button"
               onClick={() => setViewMode('svg')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${
                 viewMode === 'svg'
                   ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Layers className="w-3.5 h-3.5" />
+              <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>Polígonos SVG</span>
             </button>
           </div>
@@ -132,7 +132,7 @@ export const LaraMap: React.FC<LaraMapProps> = ({
           <button
             type="button"
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
             title={isFullscreen ? 'Reducir tamaño' : 'Ver en pantalla completa'}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -181,43 +181,44 @@ export const LaraMap: React.FC<LaraMapProps> = ({
                   {/* Pin Central con Efecto Radar / Pulso */}
                   <div className="relative flex items-center justify-center">
                     <span 
-                      className={`absolute w-8 h-8 rounded-full animate-ping opacity-75 ${
+                      className={`absolute w-5 h-5 sm:w-8 sm:h-8 rounded-full animate-ping opacity-75 ${
                         isSelected ? 'bg-white' : 'bg-[#244BC5]'
                       }`}
                     />
                     
                     <div 
-                      className={`relative w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-lg transition-transform transform group-hover:scale-125 ${
+                      className={`relative w-5 h-5 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-lg transition-transform transform group-hover:scale-125 ${
                         isSelected 
-                          ? 'bg-white text-slate-900 ring-4 ring-blue-500 scale-125' 
-                          : 'bg-slate-950 text-white border-2 border-white'
+                          ? 'bg-white text-slate-900 ring-2 sm:ring-4 ring-blue-500 scale-125' 
+                          : 'bg-slate-950 text-white border sm:border-2 border-white'
                       }`}
                     >
-                      <MapPin className="w-4 h-4 text-amber-400 drop-shadow" />
+                      <MapPin className="w-2.5 h-2.5 sm:w-4 sm:h-4 text-amber-400 drop-shadow" />
                     </div>
 
                     {/* Badge de Datos Integrado en el Mapa */}
                     <div className={`absolute whitespace-nowrap transition-all duration-200 pointer-events-none ${
                       spot.align === 'top' 
-                        ? 'bottom-full mb-1.5' 
+                        ? 'bottom-full mb-1 sm:mb-1.5' 
                         : spot.align === 'left' 
-                          ? 'right-full mr-2' 
+                          ? 'right-full mr-1.5 sm:mr-2' 
                           : spot.align === 'right' 
-                            ? 'left-full ml-2' 
-                            : 'top-full mt-1.5'
+                            ? 'left-full ml-1.5 sm:ml-2' 
+                            : 'top-full mt-1 sm:mt-1.5'
                     }`}>
-                      <div className={`px-2.5 py-1 rounded-xl shadow-xl backdrop-blur-md border text-center flex items-center gap-1.5 ${
+                      <div className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl shadow-xl backdrop-blur-md border text-center flex items-center gap-1 sm:gap-1.5 ${
                         isSelected
-                          ? 'bg-blue-600 text-white border-blue-400 ring-2 ring-white'
+                          ? 'bg-blue-600 text-white border-blue-400 ring-1 sm:ring-2 ring-white'
                           : 'bg-slate-950/90 text-white border-slate-700/80 group-hover:bg-slate-900'
                       }`}>
-                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider">
+                        <span className="text-[8px] sm:text-xs font-black uppercase tracking-wider">
                           {mun.nombre}
                         </span>
-                        <span className={`px-1.5 py-0.2 rounded-md font-mono text-[9px] sm:text-[10px] font-black ${
+                        <span className={`px-1 sm:px-1.5 py-0.2 rounded font-mono text-[8px] sm:text-[10px] font-black ${
                           getBadgeColor(stats.porcentaje)
                         }`}>
-                          {stats.participaron}/{stats.total} ({stats.porcentaje}%)
+                          <span className="hidden sm:inline">{stats.participaron}/{stats.total} </span>
+                          <span>{stats.porcentaje}%</span>
                         </span>
                       </div>
                     </div>
@@ -228,7 +229,7 @@ export const LaraMap: React.FC<LaraMapProps> = ({
 
             {/* Tooltip Flotante de Detalle al Posar el Cursor */}
             {hoveredMun && (
-              <div className="absolute bottom-3 left-3 right-3 sm:left-auto sm:right-3 sm:w-80 bg-slate-950/95 text-white backdrop-blur-md border border-slate-700/90 rounded-2xl p-4 shadow-2xl pointer-events-none z-30 animate-in fade-in zoom-in-95">
+              <div className="absolute bottom-2 left-2 right-2 sm:left-auto sm:right-3 sm:w-80 bg-slate-950/95 text-white backdrop-blur-md border border-slate-700/90 rounded-2xl p-3 sm:p-4 shadow-2xl pointer-events-none z-30 animate-in fade-in zoom-in-95">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
                   <div className="flex items-center gap-2">
                     <span className="w-3.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: hoveredMun.colorBase }} />
@@ -405,7 +406,7 @@ export const LaraMap: React.FC<LaraMapProps> = ({
           )}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5">
           {LARA_MUNICIPALITIES.map((mun) => {
             const stats = getMunStats(mun);
             const isSelected = selectedMunicipio === mun.id;
@@ -417,23 +418,23 @@ export const LaraMap: React.FC<LaraMapProps> = ({
                   soundFX.playClick();
                   onSelectMunicipio(isSelected ? '' : mun.id);
                 }}
-                className={`p-3 rounded-2xl border text-left transition-all ${
+                className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl border text-left transition-all ${
                   isSelected
                     ? 'bg-blue-50 dark:bg-blue-950/60 border-[#244BC5] ring-2 ring-blue-500/30'
                     : 'bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/60 hover:border-slate-300'
                 }`}
               >
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: mun.colorBase }} />
-                  <span className="text-xs font-black uppercase truncate text-slate-900 dark:text-white">
+                <div className="flex items-center gap-1.5 mb-0.5 sm:mb-1">
+                  <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full shrink-0" style={{ backgroundColor: mun.colorBase }} />
+                  <span className="text-[11px] sm:text-xs font-black uppercase truncate text-slate-900 dark:text-white">
                     {mun.nombre}
                   </span>
                 </div>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-[11px] text-slate-500 font-mono">
+                  <span className="text-[10px] sm:text-[11px] text-slate-500 font-mono">
                     {stats.participaron}/{stats.total}
                   </span>
-                  <span className="text-xs font-black text-blue-600 dark:text-blue-400 font-mono">
+                  <span className="text-[11px] sm:text-xs font-black text-blue-600 dark:text-blue-400 font-mono">
                     {stats.porcentaje}%
                   </span>
                 </div>

@@ -44,8 +44,8 @@ export const DashboardAuthModal: React.FC<DashboardAuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-8 overflow-hidden">
         
         {/* Patriotic top bar */}
         <div className="absolute top-0 left-0 right-0 h-1.5 flex">
@@ -64,24 +64,24 @@ export const DashboardAuthModal: React.FC<DashboardAuthModalProps> = ({
 
         {/* Header with Icon */}
         <div className="text-center pt-2">
-          <div className="mx-auto w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-900 flex items-center justify-center text-[#244BC5] dark:text-blue-400 shadow-sm mb-4">
-            <Lock className="w-7 h-7" />
+          <div className="mx-auto w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-900 flex items-center justify-center text-[#244BC5] dark:text-blue-400 shadow-sm mb-3 sm:mb-4">
+            <Lock className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
 
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 mb-2">
             Área Restringida
           </span>
 
-          <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+          <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
             Acceso a {targetTabName}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Las métricas globales, el mapa electoral y el padrón general requieren autorización de la coordinación del MPPAPT Lara.
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-5 sm:mt-6 space-y-4">
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
               Contraseña de Seguridad
@@ -96,7 +96,7 @@ export const DashboardAuthModal: React.FC<DashboardAuthModalProps> = ({
                 }}
                 autoFocus
                 placeholder="Ingrese contraseña..."
-                className="w-full px-4 py-3.5 pr-12 text-sm font-semibold bg-slate-50 dark:bg-slate-800/80 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-[#244BC5] focus:ring-4 focus:ring-blue-500/20 transition-all"
+                className="w-full px-4 py-3 sm:py-3.5 pr-12 text-base sm:text-sm font-semibold bg-slate-50 dark:bg-slate-800/80 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-[#244BC5] focus:ring-4 focus:ring-blue-500/20 transition-all"
               />
               <button
                 type="button"

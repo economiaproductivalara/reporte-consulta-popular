@@ -116,19 +116,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   return (
-    <div className="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-300">
+    <div className="py-4 sm:py-6 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-5 sm:space-y-8 animate-in fade-in duration-300">
       
       {/* Title Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-blue-100 text-[#244BC5] dark:bg-blue-950 dark:text-blue-300 mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-black tracking-wider uppercase bg-blue-100 text-[#244BC5] dark:bg-blue-950 dark:text-blue-300 mb-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             Consola de Control Estratégico
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
             Dashboard Analítico de Participación
           </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
             Métricas electorales en vivo para el MPPAPT Lara y sus entes adscritos en la Consulta Popular 2026.
           </p>
         </div>
