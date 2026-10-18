@@ -17,11 +17,20 @@ export function App() {
   const [pendingTargetTab, setPendingTargetTab] = useState<'dashboard' | 'roster'>('dashboard');
   const [legalModalType, setLegalModalType] = useState<'terms' | 'privacy' | null>(null);
 
+  // Paleta de colores claros por defecto garantizada al 100%
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('mppapt_theme');
-      if (savedTheme) return savedTheme === 'dark';
-      return false; // Por defecto siempre paleta de colores claros
+      try {
+        // Limpiar cualquier preferencia oscura anterior en la caché del navegador del usuario
+        if (localStorage.getItem('mppapt_theme') === 'dark') {
+          localStorage.removeItem('mppapt_theme');
+        }
+        const savedTheme = localStorage.getItem('mppapt_theme_v2');
+        if (savedTheme === 'dark') return true;
+        return false; // Por defecto siempre paleta de colores claros
+      } catch {
+        return false;
+      }
     }
     return false;
   });
@@ -32,10 +41,14 @@ export function App() {
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('mppapt_theme', 'dark');
+      try {
+        localStorage.setItem('mppapt_theme_v2', 'dark');
+      } catch {}
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('mppapt_theme', 'light');
+      try {
+        localStorage.setItem('mppapt_theme_v2', 'light');
+      } catch {}
     }
   }, [isDarkMode]);
 
