@@ -1,5 +1,6 @@
 import { EmployeeRecord, DashboardKpis, ApiResponse } from '../types';
 import { INITIAL_EMPLOYEES } from '../data/initialEmployees';
+import { LARA_MUNICIPALITIES, matchMunicipio } from '../data/geoLara';
 
 const LOCAL_STORAGE_KEY = 'mppapt_employees_v1';
 const GAS_URL_STORAGE_KEY = 'mppapt_gas_url_v1';
@@ -258,15 +259,20 @@ class ApiService {
         porInstitucion[inst].participaron++;
       }
 
-      // Agrupación por municipio (dentro de Lara)
+      // Agrupación por municipio (dentro de Lara con mapeo canónico exacto)
       if (!isForeign) {
-        const mun = emp.municipio || 'POR ASIGNAR';
-        if (!porMunicipio[mun]) {
-          porMunicipio[mun] = { total: 0, participaron: 0, porcentaje: 0 };
+        let munKey = emp.municipio ? emp.municipio.trim().toUpperCase() : 'POR ASIGNAR';
+        const matched = LARA_MUNICIPALITIES.find(m => matchMunicipio(emp.municipio, m.id));
+        if (matched) {
+          munKey = matched.id;
         }
-        porMunicipio[mun].total++;
+
+        if (!porMunicipio[munKey]) {
+          porMunicipio[munKey] = { total: 0, participaron: 0, porcentaje: 0 };
+        }
+        porMunicipio[munKey].total++;
         if (isYes) {
-          porMunicipio[mun].participaron++;
+          porMunicipio[munKey].participaron++;
         }
       }
     });

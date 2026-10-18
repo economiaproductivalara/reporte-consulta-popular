@@ -6,7 +6,10 @@ import { AdvancedFilters } from './AdvancedFilters';
 import { EmployeesTable } from './EmployeesTable';
 import { EmployeeRecord, FilterState } from '../../types';
 import { apiService } from '../../services/api';
-import { Sparkles } from 'lucide-react';
+import { matchMunicipio } from '../../data/geoLara';
+import { generatePendingReportPdf } from '../../services/pdfReport';
+import { soundFX } from '../../services/audio';
+import { Sparkles, FileText } from 'lucide-react';
 
 interface DashboardViewProps {
   employees: EmployeeRecord[];
@@ -39,12 +42,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         return false;
       }
 
-      // Filtro por municipio
-      if (filters.municipio) {
-        const empMun = emp.municipio ? emp.municipio.toUpperCase() : '';
-        if (empMun !== filters.municipio.toUpperCase()) {
-          return false;
-        }
+      // Filtro inteligente por municipio (resuelve acentos, guiones bajos, mayúsculas y alias)
+      if (filters.municipio && !matchMunicipio(emp.municipio, filters.municipio)) {
+        return false;
       }
 
       // Filtro por estado
@@ -131,6 +131,28 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
             Métricas electorales en vivo para el MPPAPT Lara y sus entes adscritos en la Consulta Popular 2026.
           </p>
+        </div>
+
+        {/* Quick Action: PDF Report for Pending Voters */}
+        <div className="flex items-center gap-2.5 self-stretch sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              soundFX.playSuccess();
+              generatePendingReportPdf({
+                employees: filteredEmployees,
+                filterContext: {
+                  institucion: filters.institucion,
+                  municipio: filters.municipio
+                }
+              });
+            }}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black bg-red-600 hover:bg-red-700 text-white shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+            title="Generar y descargar reporte oficial en PDF de los trabajadores que faltan por votar"
+          >
+            <FileText className="w-4 h-4" />
+            <span>Descargar PDF Pendientes</span>
+          </button>
         </div>
       </div>
 

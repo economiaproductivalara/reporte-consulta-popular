@@ -133,19 +133,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </span>
                 )}
               </button>
-
-              <button
-                onClick={() => handleTabClick('roster')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                  activeTab === 'roster'
-                    ? 'bg-gradient-to-r from-blue-600 to-[#244BC5] text-white shadow-md shadow-blue-500/20'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-slate-700/50'
-                }`}
-              >
-                <Users className="w-4 h-4" />
-                <span>Padrón ({totalPadron})</span>
-                {!isAuthenticated && <Lock className="w-3 h-3 text-slate-400" />}
-              </button>
             </nav>
 
             {/* Right Action Controls: Progress counter, Lock, Dark Mode */}
@@ -184,31 +171,46 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               )}
 
-              {/* Dark Mode Toggle */}
+              {/* Botón de cambio de tema: Claro / Oscuro */}
               <button
+                type="button"
                 onClick={() => {
                   soundFX.playClick();
                   setIsDarkMode(!isDarkMode);
                 }}
-                aria-label="Alternar modo oscuro"
-                className="p-2 sm:p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/60 transition-colors"
+                title={isDarkMode ? 'Cambiar a paleta de colores claros' : 'Cambiar a modo oscuro'}
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-black transition-all border ${
+                  isDarkMode
+                    ? 'bg-slate-800 border-amber-500/40 text-amber-400 hover:bg-slate-700'
+                    : 'bg-white border-slate-300 text-slate-800 hover:bg-slate-100 hover:border-slate-400 shadow-2xs'
+                }`}
               >
-                {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
+                {isDarkMode ? (
+                  <>
+                    <Sun className="w-4 h-4 text-amber-400" />
+                    <span className="hidden sm:inline">Modo Claro</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-4 h-4 text-blue-600" />
+                    <span className="hidden sm:inline text-slate-700">Modo Oscuro</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Floating Bottom App Navigation Bar for Mobile (Thumb-Friendly Native Feel) */}
+      {/* Floating Bottom App Navigation Bar for Mobile */}
       <nav 
         aria-label="Navegación Móvil"
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200/90 dark:border-slate-800 px-3 py-1.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-around"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200/90 dark:border-slate-800 px-6 py-1.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-around"
         style={{ paddingBottom: 'max(0.4rem, env(safe-area-inset-bottom))' }}
       >
         <button
           onClick={() => handleTabClick('register')}
-          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+          className={`flex flex-col items-center justify-center py-1 px-4 rounded-xl transition-all ${
             activeTab === 'register'
               ? 'text-blue-600 dark:text-blue-400 font-black'
               : 'text-slate-500 dark:text-slate-400 font-medium'
@@ -217,12 +219,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className={`p-1 rounded-xl transition-colors ${activeTab === 'register' ? 'bg-blue-50 dark:bg-blue-950/60' : ''}`}>
             <Vote className="w-5 h-5" />
           </div>
-          <span className="text-[10px] mt-0.5">Registro</span>
+          <span className="text-[11px] mt-0.5">Registro</span>
         </button>
 
         <button
           onClick={() => handleTabClick('dashboard')}
-          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl relative transition-all ${
+          className={`flex flex-col items-center justify-center py-1 px-4 rounded-xl relative transition-all ${
             activeTab === 'dashboard'
               ? 'text-blue-600 dark:text-blue-400 font-black'
               : 'text-slate-500 dark:text-slate-400 font-medium'
@@ -231,30 +233,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className={`p-1 rounded-xl transition-colors ${activeTab === 'dashboard' ? 'bg-blue-50 dark:bg-blue-950/60' : ''}`}>
             <BarChart3 className="w-5 h-5" />
           </div>
-          <span className="text-[10px] mt-0.5 flex items-center gap-0.5">
+          <span className="text-[11px] mt-0.5 flex items-center gap-1">
             Dashboard
             {!isAuthenticated ? (
               <Lock className="w-2.5 h-2.5 text-slate-400" />
             ) : (
-              <span className="text-[9px] font-bold text-amber-500">({percentage}%)</span>
+              <span className="text-[10px] font-bold text-amber-500">({percentage}%)</span>
             )}
-          </span>
-        </button>
-
-        <button
-          onClick={() => handleTabClick('roster')}
-          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl relative transition-all ${
-            activeTab === 'roster'
-              ? 'text-blue-600 dark:text-blue-400 font-black'
-              : 'text-slate-500 dark:text-slate-400 font-medium'
-          }`}
-        >
-          <div className={`p-1 rounded-xl transition-colors ${activeTab === 'roster' ? 'bg-blue-50 dark:bg-blue-950/60' : ''}`}>
-            <Users className="w-5 h-5" />
-          </div>
-          <span className="text-[10px] mt-0.5 flex items-center gap-0.5">
-            Padrón
-            {!isAuthenticated && <Lock className="w-2.5 h-2.5 text-slate-400" />}
           </span>
         </button>
       </nav>

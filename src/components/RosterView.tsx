@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { EmployeeRecord, FilterState } from '../types';
 import { AdvancedFilters } from './Dashboard/AdvancedFilters';
 import { EmployeesTable } from './Dashboard/EmployeesTable';
+import { matchMunicipio } from '../data/geoLara';
 import { Users, PlusCircle } from 'lucide-react';
 
 interface RosterViewProps {
@@ -27,7 +28,7 @@ export const RosterView: React.FC<RosterViewProps> = ({
   const filteredEmployees = useMemo(() => {
     return employees.filter((emp) => {
       if (filters.institucion && emp.institucion !== filters.institucion) return false;
-      if (filters.municipio && emp.municipio.toUpperCase() !== filters.municipio.toUpperCase()) return false;
+      if (filters.municipio && !matchMunicipio(emp.municipio, filters.municipio)) return false;
       if (filters.estado && emp.estado.toUpperCase() !== filters.estado.toUpperCase()) return false;
       if (filters.estatus !== 'TODOS' && emp.participo !== filters.estatus) return false;
       if (filters.soloForaneos && !((emp.estado && emp.estado.toUpperCase() !== 'LARA') || emp.esForaneo)) return false;

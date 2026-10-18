@@ -3,6 +3,7 @@ import {
   CheckCircle2, 
   Clock, 
   Download, 
+  FileText,
   ChevronLeft, 
   ChevronRight, 
   Globe2, 
@@ -12,6 +13,7 @@ import {
 import { EmployeeRecord } from '../../types';
 import { apiService } from '../../services/api';
 import { soundFX } from '../../services/audio';
+import { generatePendingReportPdf } from '../../services/pdfReport';
 
 interface EmployeesTableProps {
   employees: EmployeeRecord[];
@@ -93,10 +95,24 @@ export const EmployeesTable: React.FC<EmployeesTableProps> = ({
           <button
             type="button"
             onClick={handleExportCsv}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-colors"
           >
             <Download className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-            <span>Descargar CSV</span>
+            <span>CSV</span>
+          </button>
+
+          {/* Export Pending to PDF Button */}
+          <button
+            type="button"
+            onClick={() => {
+              soundFX.playSuccess();
+              generatePendingReportPdf({ employees });
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-red-600 hover:bg-red-700 text-white shadow-xs transition-all hover:scale-[1.02]"
+            title="Descargar lista oficial de trabajadores pendientes por votar en formato PDF"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>PDF Pendientes</span>
           </button>
         </div>
       </div>

@@ -21,7 +21,7 @@ export function App() {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('mppapt_theme');
       if (savedTheme) return savedTheme === 'dark';
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return false; // Por defecto siempre paleta de colores claros
     }
     return false;
   });
