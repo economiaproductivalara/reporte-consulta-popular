@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Background circle subtle -->
+  <rect width="512" height="512" rx="128" fill="#0F172A"/>
+  
+  <g transform="translate(256, 256)">
+    <!-- Yellow Spiral (Top) -->
+    <g transform="rotate(0)">
+      <path d="M 0 -70 A 70 70 0 0 1 70 0" stroke="#F5C500" stroke-width="26" stroke-linecap="round" fill="none"/>
+      <path d="M 0 -110 A 110 110 0 0 1 110 0" stroke="#F5C500" stroke-width="26" stroke-linecap="round" fill="none"/>
+      <path d="M 0 -150 A 150 150 0 0 1 150 0" stroke="#F5C500" stroke-width="26" stroke-linecap="round" fill="none"/>
+      <path d="M 0 -190 A 190 190 0 0 1 190 0" stroke="#F5C500" stroke-width="26" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <!-- Red Spiral (Bottom Right) -->
+    <g transform="rotate(120)">
+      <path d="M 0 -70 A 70 70 0 0 1 70 0" stroke="#DE2719" stroke-width="26" stroke-linecap="round" fill="none"/>
+      <path d="M 0 -110 A 110 110 0 0 1 110 0" stroke="#DE2719" stroke-width="26" stroke-linecap="round" fill="none"/>
+      <path d="M 0 -150 A 150 150 0 0 1 150 0" stroke="#DE2719" stroke-width="26" stroke-linecap="round" fill="none"/>
+      <path d="M 0 -190 A 190 190 0 0 1 190 0" stroke="#DE2719" stroke-width="26" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <!-- Blue Spiral (Bottom Left) -->
+    <g transform="rotate(240)">
+      <path d="M 0 -70 A 70 70 0 0 1 70 0" stroke="#244BC5" stroke-width="26" stroke-linecap="round" fill="none"/>
+      <path d="M 0 -110 A 110 110 0 0 1 110 0" stroke="#244BC5" stroke-width="26" stroke-linecap="round" fill="none"/>
+      <path d="M 0 -150 A 150 150 0 0 1 150 0" stroke="#244BC5" stroke-width="26" stroke-linecap="round" fill="none"/>
+      <path d="M 0 -190 A 190 190 0 0 1 190 0" stroke="#244BC5" stroke-width="26" stroke-linecap="round" fill="none"/>
+    </g>
+  </g>
+</svg>
